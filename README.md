@@ -9,6 +9,11 @@ Portfolio contains five machine learning (ML) methods so far:
 3. Naive Bayes
 4. K-means
 5. K Nearest Neighbour
+
+For each ML method directory there is:
+1. a jupyter notebook showcasing the use of the model
+2. a log.md file explaining how errors were handled, and showing apendices and acknowledgements
+3. dataset files 
    
 ## Portfolio Description
 
