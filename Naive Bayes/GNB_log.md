@@ -47,4 +47,3 @@ else:
 - https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html
 - Chatgpt for findign data set, ideas and debugging
 - https://archive.ics.uci.edu/dataset/159/magic+gamma+telescope
-- 

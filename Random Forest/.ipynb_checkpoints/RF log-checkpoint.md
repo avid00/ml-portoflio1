@@ -7,6 +7,7 @@ Using the Sloan Digital Sky Survey (SDSS) data, perform regression (prediction) 
 
 Later on, I performs randomizedsearchcv to see if I can make the model more accurate.
 
+## Log work
 1. added sdss data
 2. dividing dat into 80-20 ratio 
 3. LESSON: blobs are used for artifical and neat, gaussian structured data.
@@ -69,10 +70,11 @@ best_params = {'n_estimators': 300,
     
 ## Future Work
 increase accuracy using other methods.
+try regression
+Learn how to assign GPU for randomizedsearchcv
 
 
 ## Appendix and Acknolwedgments
-- 
-- Chatgpt for findign data set, ideas and debugging
+- Chatgpt for findign data set, ideas and debugging especially with randomizedsearchcv
 - SDSS for data set
 - https://www.kaggle.com/code/ktrinh/sdss-classification-with-random-forests-99-2/notebook
