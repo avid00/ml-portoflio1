@@ -1,6 +1,6 @@
 ### Student id: C00313459
 ### Name: Amisha Das
-# Data Science Portfolio 
+# Data Science Portfolio (preliminary)
 
 ## 1. Introduction
 Portfolio contains five machine learning (ML) methods so far:
