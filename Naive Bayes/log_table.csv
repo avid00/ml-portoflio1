@@ -1,0 +1,38 @@
+Section,Description,Level of Difficulty,Time Spent (approx.),Change From,Changed To
+Gaussian Naive Bayes (GNB),Added count-based diabetes data,Medium,30 min,N/A,"import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, StandardScaler, KBinsDiscretizer
+from sklearn.naive_bayes import GaussianNB, MultinomialNB
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.decomposition import PCA
+"
+Gaussian Naive Bayes (GNB),Added LabelEncoder() to convert categories into numbers,Easy,20 min,N/A,"df = pd.read_csv('diabetes.csv')
+"
+Gaussian Naive Bayes (GNB),Fixed column assignment issue in magic_df,Medium,40 min,"
+magic_df.columns = feature_names
+        ","
+if isinstance(magic_df, pd.DataFrame):
+    magic_df.columns = feature_names
+else:
+    print(""Error: magic_df is not a DataFrame. Check file reading."")
+        "
+GNB with PCA,Tried increasing model accuracy with PCA,Hard,1 hour,N/A,"print(""Dataset Info:\n"", df.info())
+print(""\nFirst Few Rows:\n"", df.head())
+"
+GNB with PCA,Removed redundant fit_transform(),Easy,15 min,Redundant fit_transform() usage,Removed fit_transform() where unnecessary
+GNB with PCA,"Results negligible, noted for future work",N/A,N/A,N/A,N/A
+Multinomial NB,Added MultinomialNB and KBinsDiscretizer to imports,Easy,15 min,N/A,"df = df.dropna()
+"
+Multinomial NB,Tried working with .data file but it wouldn't work,Medium,30 min,N/A,Encountered file compatibility issues
+Multinomial NB,Added error checking for DataFrame format,Easy,20 min,"
+magic_df.columns = feature_names
+        ","
+if isinstance(magic_df, pd.DataFrame):
+    magic_df.columns = feature_names
+else:
+    print(""Error: magic_df is not a DataFrame. Check file reading."")
+        "
+Multinomial NB,Converted .data file to .csv for better compatibility,Medium,40 min,.data file format,Converted .data file to .csv using Pandas

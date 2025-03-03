@@ -1,0 +1,6 @@
+Model,Description,Level of Difficulty,Time Spent,Change From,Changed To,Notes
+KNN,"Imported mean_absolute_error, mean_squared_error",Easy,10 mins,N/A,Added imports for error measurement,
+KNN,Used StandardScaler for feature normalization,Medium,15 min,N/A,Applied StandardScaler to dataset,
+Data,Split data into labeled and unlabeled,Medium,20 min,No unlabeled data available,Manually removed labels from some data,
+K-Means,"Standardized features, chose k=5 for K-Means",Medium,30 mins,N/A,Set k=5 for initial testing,
+KNN,Trained KNN on labeled dataset,Hard,40 min,N/A,KNN trained using labeled subset,

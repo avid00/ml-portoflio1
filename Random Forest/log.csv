@@ -1,0 +1,12 @@
+Description,Level of Difficulty,Time Spent,Change From,Changed To
+Added SDSS data,Easy,10 min,N/A,Loaded SDSS dataset
+Divided data into 80-20 ratio,Easy,10 min,N/A,Split dataset into training (80%) and testing (20%)
+Implemented classification and regression functions,Medium,30 min,N/A,Added separate functions for classification and redshift prediction
+"Tested classification model, achieved 89% accuracy",Medium,40 mins,N/A,Initial model accuracy at 89%
+Added comparative scatter plot for true vs predicted results,Easy,20 min,N/A,Scatter plot visualization
+Increased number of trees (n_estimators),Medium,30 min,"100, 300, 500",Testing different tree counts
+Tuned hyperparameters using GridSearchCV,Hard,1-2 hours,N/A,Tested 243 fits with 3-fold cross-validation
+Switched to RandomizedSearchCV for efficiency,Hard,1 hour,GridSearchCV,RandomizedSearchCV (testing 20 combinations instead of all 54)
+Reduced cross-validation folds from 3 to 2,Medium,30 mins,3-fold CV,2-fold CV
+Retrained model with best parameters,Medium,1 hour,N/A,"Used best_params={'n_estimators': 300, 'min_samples_split': 5, 'min_samples_leaf': 1, 'max_depth': 20}"
+Results didn't improve much,N/A,N/A,N/A,No significant accuracy gain
