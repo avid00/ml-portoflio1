@@ -1,5 +1,9 @@
 ### Student id: C00313459
 ### Name: Amisha Das
+
+### Submitted to: Dr. Greg Doyle
+### For the course: MSc in Data Science – Data Analytics and Algorithms
+
 # Data Science Portfolio (preliminary)
 
 ## 1. Introduction
