@@ -10,6 +10,8 @@ Portfolio contains five machine learning (ML) methods so far:
 4. K-means
 5. K Nearest Neighbour
 
+Note: KNN and K-means are covered (incompletely) in a single notebook in an attempt to create a semi-supervised learning model.
+
 For each ML method directory there is:
 1. a jupyter notebook showcasing the use of the model
 2. a log.md file explaining how errors were handled, and showing apendices and acknowledgements
