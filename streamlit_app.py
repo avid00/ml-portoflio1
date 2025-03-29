@@ -24,6 +24,7 @@ class_names = [
 st.title("Galaxy Morphology Classifier")
 st.write("Upload a galaxy image and let the CNN predict its type!")
 
+st.markdown("🌌 Need to find a galaxy image? Download one from [Unsplash](https://unsplash.com/s/photos/universe)")
 # Upload image
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
