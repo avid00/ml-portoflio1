@@ -1,50 +1,86 @@
 
 import streamlit as st
-from tensorflow.keras.models import load_model
-from PIL import Image
+import pandas as pd
 import numpy as np
+import joblib
+from sklearn.impute import SimpleImputer
+from scipy.stats import skew, kurtosis
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
 
-st.title("Galaxy Morphology Classifier")
-st.write("Upload a galaxy image and let the CNN predict its type!")
+st.set_page_config(page_title="Lightcurve Classifier", layout="wide")
+st.title("🔭 Lightcurve Classification App")
+st.markdown("Upload lightcurve data to classify each object as **Stable** or **Transient** using statistical features.")
 
-st.markdown("🌌 Need to find a galaxy image? Download one from the [ESA](https://esahubble.org/images/archive/category/galaxies/) website")
+# Load model
+model = joblib.load("classical_rf_model.pkl")
 
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+# Feature extraction
+def extract_features(df):
+    features = []
+    ids = []
+    grouped = df.groupby("ID")
+    for obj_id, group in grouped:
+        if group["Mag"].nunique() <= 1:
+            continue
 
-if uploaded_file is not None:
-    try:
-        image = Image.open(uploaded_file).convert("RGB").resize((69, 69))
-        st.image(image, caption='Uploaded Image', use_column_width=True)
+        mag = group["Mag"].values
+        mjd = group["MJD"].values.reshape(-1, 1)
 
-        # Convert image to array
-        image_array = np.array(image) / 255.0
-        image_array = np.expand_dims(image_array, axis=0)
+        mean_mag = np.mean(mag)
+        std_mag = np.std(mag)
+        range_mag = np.max(mag) - np.min(mag)
+        skew_mag = skew(mag)
+        kurt_mag = kurtosis(mag)
 
-        # Display image shape for debugging
-        st.write("Image array shape:", image_array.shape)
+        try:
+            slope = LinearRegression().fit(mjd, mag).coef_[0]
+        except:
+            slope = 0.0
 
-        # Load model
-        model = load_model("galaxy_cnn_model.h5")
+        features.append([mean_mag, std_mag, range_mag, skew_mag, kurt_mag, slope])
+        ids.append(obj_id)
 
-        # Define class names
-        class_names = [
-            "Completely round smooth",
-            "In-between smooth",
-            "Cigar-shaped smooth",
-            "Barred spiral",
-            "Unbarred spiral",
-            "Edge-on without bulge",
-            "Edge-on with bulge",
-            "Spiral arms",
-            "Irregular",
-            "Merger"
-        ]
+    return np.array(features), ids
 
-        # Make prediction
-        prediction = model.predict(image_array)
-        predicted_class = class_names[np.argmax(prediction)]
+# Upload
+uploaded_file = st.file_uploader("Upload lightcurve CSV", type=["csv"])
+if uploaded_file:
+    df = pd.read_csv(uploaded_file)
+    df = df[["ID", "MJD", "Mag"]].dropna()
 
-        st.success(f"Predicted class: **{predicted_class}**")
+    st.success("✅ File loaded successfully.")
+    st.write("Sample data:")
+    st.dataframe(df.head())
 
-    except Exception as e:
-        st.error(f"Prediction failed. Error: {e}")
+    X, ids = extract_features(df)
+    imputer = SimpleImputer(strategy="mean")
+    X = imputer.fit_transform(X)
+
+    preds = model.predict(X)
+    result_df = pd.DataFrame({
+        "ID": ids,
+        "Predicted Label": preds,
+        "Label Description": ["Transient Object" if p == 1 else "Stable Object" for p in preds]
+    })
+
+    st.subheader("🔍 Classification Results")
+    st.dataframe(result_df)
+
+    if (result_df["Predicted Label"] == 1).any():
+        st.error("🚨 Transient detected in the uploaded dataset!")
+
+        # Display transient lightcurve
+        transient_ids = result_df[result_df["Predicted Label"] == 1]["ID"].values
+        first_id = transient_ids[0]
+        obj_curve = df[df["ID"] == first_id]
+
+        st.subheader("📈 Lightcurve of Detected Transient")
+        fig, ax = plt.subplots()
+        ax.scatter(obj_curve["MJD"], obj_curve["Mag"], color='blue')
+        ax.set_xlabel("MJD")
+        ax.set_ylabel("Magnitude")
+        ax.set_title(f"Lightcurve for ID: {first_id}")
+        ax.invert_yaxis()
+        st.pyplot(fig)
+        st.caption(f"Object ID: `{first_id}`")
