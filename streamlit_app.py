@@ -1,43 +1,50 @@
+
 import streamlit as st
 from tensorflow.keras.models import load_model
 from PIL import Image
 import numpy as np
 
-# Load model
-model = load_model("galaxy_cnn_model.h5")
-
-# Class names
-class_names = [
-    "Completely round smooth",
-    "In-between smooth",
-    "Cigar-shaped smooth",
-    "Barred spiral",
-    "Unbarred spiral",
-    "Edge-on without bulge",
-    "Edge-on with bulge",
-    "Spiral arms",
-    "Irregular",
-    "Merger"
-]
-
-
 st.title("Galaxy Morphology Classifier")
-st.write("Upload a galaxy image and let the CNN guess its type!")
+st.write("Upload a galaxy image and let the CNN predict its type!")
 
-st.markdown("🌌 Need to find a galaxy image? Download one from the [ESA](https://esahubble.org/images/archive/category/galaxies/) website")
-# Upload image
+st.markdown("🌌 Need a galaxy image to test? [Download this one (JPEG)](https://images.unsplash.com/photo-30kHyW7TSB8?fm=jpg)")
+
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    image = Image.open(uploaded_file).resize((69, 69))
-    st.image(image, caption="Uploaded Image", use_column_width=True)
-    
-    # Preprocess
-    image_array = np.array(image) / 255.0
-    image_array = np.expand_dims(image_array, axis=0)
-    
-    # Predict
-    prediction = model.predict(image_array)
-    class_idx = np.argmax(prediction)
-    
-    st.success(f"Predicted class: **{class_names[class_idx]}**")
+    try:
+        image = Image.open(uploaded_file).convert("RGB").resize((69, 69))
+        st.image(image, caption='Uploaded Image', use_column_width=True)
+
+        # Convert image to array
+        image_array = np.array(image) / 255.0
+        image_array = np.expand_dims(image_array, axis=0)
+
+        # Display image shape for debugging
+        st.write("Image array shape:", image_array.shape)
+
+        # Load model
+        model = load_model("galaxy_cnn_model.h5")
+
+        # Define class names
+        class_names = [
+            "Completely round smooth",
+            "In-between smooth",
+            "Cigar-shaped smooth",
+            "Barred spiral",
+            "Unbarred spiral",
+            "Edge-on without bulge",
+            "Edge-on with bulge",
+            "Spiral arms",
+            "Irregular",
+            "Merger"
+        ]
+
+        # Make prediction
+        prediction = model.predict(image_array)
+        predicted_class = class_names[np.argmax(prediction)]
+
+        st.success(f"Predicted class: **{predicted_class}**")
+
+    except Exception as e:
+        st.error(f"Prediction failed. Error: {e}")
