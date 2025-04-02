@@ -90,7 +90,7 @@ if uploaded_file:
 
         st.subheader("📈 Lightcurve of Detected Transient")
         fig, ax = plt.subplots(figsize=(5, 3))
-        ax.scatter(obj_curve["MJD"], obj_curve["Mag"], color='black', s=10)
+        ax.scatter(obj_curve["MJD"], obj_curve["Mag"], color='black', s=4)
         ax.set_xlabel("MJD")
         ax.set_ylabel("Magnitude")
         ax.set_title(f"Lightcurve for ID: {first_id}")
