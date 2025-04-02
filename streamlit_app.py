@@ -7,7 +7,7 @@ import numpy as np
 st.title("Galaxy Morphology Classifier")
 st.write("Upload a galaxy image and let the CNN predict its type!")
 
-st.markdown("🌌 Need a galaxy image to test? [Download this one (JPEG)](https://images.unsplash.com/photo-30kHyW7TSB8?fm=jpg)")
+st.markdown("🌌 Need to find a galaxy image? Download one from the [ESA](https://esahubble.org/images/archive/category/galaxies/) website")
 
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
