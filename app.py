@@ -1,0 +1,76 @@
+
+import streamlit as st
+import pandas as pd
+import numpy as np
+import joblib
+from sklearn.impute import SimpleImputer
+
+st.set_page_config(page_title="Lightcurve Classifier", layout="wide")
+st.title("🔭 Lightcurve Classification App")
+st.markdown("Upload lightcurve data to classify each object as **Stable** or **Transient** using statistical features.")
+
+# Load model
+model = joblib.load("classical_rf_model.pkl")
+
+# Feature extraction function
+def extract_features(df):
+    from scipy.stats import skew, kurtosis
+    from sklearn.linear_model import LinearRegression
+
+    features = []
+    ids = []
+    grouped = df.groupby("ID")
+    for obj_id, group in grouped:
+        if group["Mag"].nunique() <= 1:
+            continue  # skip flat lightcurves
+
+        mag = group["Mag"].values
+        mjd = group["MJD"].values.reshape(-1, 1)
+
+        mean_mag = np.mean(mag)
+        std_mag = np.std(mag)
+        range_mag = np.max(mag) - np.min(mag)
+        skew_mag = skew(mag)
+        kurt_mag = kurtosis(mag)
+
+        try:
+            model_fit = LinearRegression().fit(mjd, mag)
+            slope = model_fit.coef_[0]
+        except:
+            slope = 0.0
+
+        features.append([mean_mag, std_mag, range_mag, skew_mag, kurt_mag, slope])
+        ids.append(obj_id)
+
+    return np.array(features), ids
+
+# Upload section
+uploaded_file = st.file_uploader("Upload lightcurve CSV", type=["csv"])
+if uploaded_file:
+    df = pd.read_csv(uploaded_file)
+    df = df[["ID", "MJD", "Mag"]].dropna()
+
+    st.success("✅ File loaded successfully.")
+    st.write("Sample data:")
+    st.dataframe(df.head())
+
+    # Extract features
+    X, ids = extract_features(df)
+    imputer = SimpleImputer(strategy="mean")
+    X = imputer.fit_transform(X)
+
+    # Predict
+    preds = model.predict(X)
+    result_df = pd.DataFrame({
+        "ID": ids,
+        "Predicted Label": preds,
+        "Label Description": ["Transient Object" if p == 1 else "Stable Object" for p in preds]
+    })
+
+    # Display table
+    st.subheader("🔍 Classification Results")
+    st.dataframe(result_df)
+
+    # Trigger alert if transient is detected
+    if (result_df["Predicted Label"] == 1).any():
+        st.error("🚨 Transient detected in the uploaded dataset!")
