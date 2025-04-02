@@ -90,11 +90,12 @@ if uploaded_file:
         obj_curve = df[df["ID"] == first_id]
 
         st.subheader("📈 Lightcurve of Detected Transient")
-        fig, ax = plt.subplots(figsize=(2, 1))
+        fig, ax = plt.subplots(figsize=(4, 2.5))
         ax.scatter(obj_curve["MJD"], obj_curve["Mag"], color='black', s=2)
         ax.set_xlabel("MJD")
         ax.set_ylabel("Magnitude")
         ax.set_title(f"Lightcurve for ID: {first_id}")
         ax.invert_yaxis()
+        plt.tight_layout() 
         st.pyplot(fig)
         st.caption(f"Object ID: `{first_id}`")
