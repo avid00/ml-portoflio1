@@ -4,6 +4,9 @@ import pandas as pd
 import numpy as np
 import joblib
 from sklearn.impute import SimpleImputer
+from scipy.stats import skew, kurtosis
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Lightcurve Classifier", layout="wide")
 st.title("🔭 Lightcurve Classification App")
@@ -12,17 +15,14 @@ st.markdown("Upload lightcurve data to classify each object as **Stable** or **T
 # Load model
 model = joblib.load("classical_rf_model.pkl")
 
-# Feature extraction function
+# Feature extraction
 def extract_features(df):
-    from scipy.stats import skew, kurtosis
-    from sklearn.linear_model import LinearRegression
-
     features = []
     ids = []
     grouped = df.groupby("ID")
     for obj_id, group in grouped:
         if group["Mag"].nunique() <= 1:
-            continue  # skip flat lightcurves
+            continue
 
         mag = group["Mag"].values
         mjd = group["MJD"].values.reshape(-1, 1)
@@ -34,8 +34,7 @@ def extract_features(df):
         kurt_mag = kurtosis(mag)
 
         try:
-            model_fit = LinearRegression().fit(mjd, mag)
-            slope = model_fit.coef_[0]
+            slope = LinearRegression().fit(mjd, mag).coef_[0]
         except:
             slope = 0.0
 
@@ -44,7 +43,7 @@ def extract_features(df):
 
     return np.array(features), ids
 
-# Upload section
+# Upload
 uploaded_file = st.file_uploader("Upload lightcurve CSV", type=["csv"])
 if uploaded_file:
     df = pd.read_csv(uploaded_file)
@@ -54,12 +53,10 @@ if uploaded_file:
     st.write("Sample data:")
     st.dataframe(df.head())
 
-    # Extract features
     X, ids = extract_features(df)
     imputer = SimpleImputer(strategy="mean")
     X = imputer.fit_transform(X)
 
-    # Predict
     preds = model.predict(X)
     result_df = pd.DataFrame({
         "ID": ids,
@@ -67,10 +64,23 @@ if uploaded_file:
         "Label Description": ["Transient Object" if p == 1 else "Stable Object" for p in preds]
     })
 
-    # Display table
     st.subheader("🔍 Classification Results")
     st.dataframe(result_df)
 
-    # Trigger alert if transient is detected
     if (result_df["Predicted Label"] == 1).any():
         st.error("🚨 Transient detected in the uploaded dataset!")
+
+        # Display transient lightcurve
+        transient_ids = result_df[result_df["Predicted Label"] == 1]["ID"].values
+        first_id = transient_ids[0]
+        obj_curve = df[df["ID"] == first_id]
+
+        st.subheader("📈 Lightcurve of Detected Transient")
+        fig, ax = plt.subplots()
+        ax.scatter(obj_curve["MJD"], obj_curve["Mag"], color='blue')
+        ax.set_xlabel("MJD")
+        ax.set_ylabel("Magnitude")
+        ax.set_title(f"Lightcurve for ID: {first_id}")
+        ax.invert_yaxis()
+        st.pyplot(fig)
+        st.caption(f"Object ID: `{first_id}`")
