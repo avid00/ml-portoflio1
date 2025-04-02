@@ -71,12 +71,25 @@ if uploaded_file:
         st.error("🚨 Transient detected in the uploaded dataset!")
 
         # Display transient lightcurve
+        st.checkbox("Show all transient plots side-by-side", key="show_all", value=False)
+        if st.session_state["show_all"]:
+            st.subheader("📊 All Detected Transients")
+            for tid in transient_ids:
+                obj = df[df["ID"] == tid]
+                fig, ax = plt.subplots(figsize=(5, 3))
+                ax.scatter(obj["MJD"], obj["Mag"], color='blue')
+                ax.set_title(f"ID: {tid}")
+                ax.set_xlabel("MJD")
+                ax.set_ylabel("Mag")
+                ax.invert_yaxis()
+                st.pyplot(fig)
+
         transient_ids = result_df[result_df["Predicted Label"] == 1]["ID"].values
         first_id = transient_ids[0]
         obj_curve = df[df["ID"] == first_id]
 
         st.subheader("📈 Lightcurve of Detected Transient")
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(5, 3))
         ax.scatter(obj_curve["MJD"], obj_curve["Mag"], color='blue')
         ax.set_xlabel("MJD")
         ax.set_ylabel("Magnitude")
