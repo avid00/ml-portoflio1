@@ -71,26 +71,27 @@ if uploaded_file:
         st.error("🚨 Transient detected in the uploaded dataset!")
 
         # Display transient lightcurve
-        st.checkbox("Show all transient plots side-by-side", key="show_all", value=False)
-        if st.session_state["show_all"]:
-            st.subheader("📊 All Detected Transients")
-            for tid in transient_ids:
-                obj = df[df["ID"] == tid]
-                fig, ax = plt.subplots(figsize=(5, 3))
-                ax.scatter(obj["MJD"], obj["Mag"], color='blue')
-                ax.set_title(f"ID: {tid}")
+        # Option to show all lightcurves
+        if st.checkbox("Show all object lightcurves side-by-side", value=False):
+            st.subheader("📊 All Uploaded Lightcurves")
+            for obj_id in result_df["ID"].values:
+                obj = df[df["ID"] == obj_id]
+                fig, ax = plt.subplots(figsize=(4, 2.5))
+                ax.scatter(obj["MJD"], obj["Mag"], color='black', s=10)
+                ax.set_title(f"ID: {obj_id}")
                 ax.set_xlabel("MJD")
                 ax.set_ylabel("Mag")
                 ax.invert_yaxis()
-                st.pyplot(fig)
+                st.pyplot(fig, use_container_width=False)
+
 
         transient_ids = result_df[result_df["Predicted Label"] == 1]["ID"].values
         first_id = transient_ids[0]
         obj_curve = df[df["ID"] == first_id]
 
         st.subheader("📈 Lightcurve of Detected Transient")
-        fig, ax = plt.subplots(figsize=(5, 3))
-        ax.scatter(obj_curve["MJD"], obj_curve["Mag"], color='black', s=4)
+        fig, ax = plt.subplots(figsize=(4, 2))
+        ax.scatter(obj_curve["MJD"], obj_curve["Mag"], color='black', s=2)
         ax.set_xlabel("MJD")
         ax.set_ylabel("Magnitude")
         ax.set_title(f"Lightcurve for ID: {first_id}")
