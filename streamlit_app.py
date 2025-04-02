@@ -24,7 +24,7 @@ if uploaded_file is not None:
         st.write("Image array shape:", image_array.shape)
 
         # Load model
-        model = load_model("improved_galaxy_cnn_model.h5")
+        model = load_model("galaxy_cnn_model.h5")
 
         # Define class names
         class_names = [
